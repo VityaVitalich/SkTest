@@ -6,6 +6,8 @@ import networkx as nx
 import numpy as np
 
 
+# Датакласс чтобы хранить ноды.
+# Имеет имя, соседей и какую-то доп.инфу если мы захотим передать.
 @dataclass
 class Node:
     name: str
@@ -15,14 +17,18 @@ class Node:
 
 class Graph:
     def __init__(self) -> None:
+        # будем хранить все существующие ноды в дикте
+        # по имени и значение - датакласс этой ноды.
         self.all_nodes = {}
 
+    # по имени и доп инфе создаем ноду или перезаписываем имеющуюся
     def add_node(self, node_name: str, extra_info: Optional[str] = None) -> None:
         if node_name in self.all_nodes.keys():
             print("Warning! Node name is already present in current graph")
 
         self.all_nodes[node_name] = Node(node_name, special_info=extra_info)
 
+    # по именам двух нод строим ребро между ними
     def add_edge(self, first_node: str, second_node: str) -> None:
         assert first_node in self.all_nodes.keys(), "no first node in graph"
         assert second_node in self.all_nodes.keys(), "no second node in graph"
@@ -34,6 +40,7 @@ class Graph:
         self.all_nodes[first_node].neighbors.append(second_node)
         self.all_nodes[second_node].neighbors.append(first_node)
 
+    # вспомогательная функция, вытаскивает все существующие ребра
     def get_all_edges(self) -> Set[Tuple[str, str]]:
         all_edges = set()
         for name, node in self.all_nodes.items():
@@ -43,8 +50,11 @@ class Graph:
 
         return all_edges
 
+    # из этой функции можно получить рандомный граф
+    # исполнение вдохновлено .from_pretrained() в transformers, по моему удобно и прикольно
     @staticmethod
     def generate_random(num_nodes: int = 10, p: int = 0.1) -> "Graph":
+        # список рандомных имен
         random_names = [
             "Aleksandr",
             "Anna",
@@ -69,7 +79,8 @@ class Graph:
         unique_names = set()
         for i in range(num_nodes):
             cur_name = np.random.choice(random_names) + " 1"
-
+            # так как мы можем встретить повторения,
+            # то наши имена будут также занумерованы
             k = 2
             while cur_name in unique_names:
                 cur_name = cur_name[:-1] + str(k)
@@ -90,6 +101,8 @@ class Graph:
 
         return g
 
+    # рисовалка через nx. Я честно пытался через пустой matplotlib,
+    #  но это очень очень неприятное занятие
     def draw_graph(self, options: Optional[Dict[str, Any]] = None) -> None:
         all_edges = self.get_all_edges()
         all_nodes = list(self.all_nodes.keys())
