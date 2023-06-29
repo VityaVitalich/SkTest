@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#instructions for executing those scripts
+sudo docker run --name sk ubuntu
+sudo docker start sk
+sudo docker cp file_toucher.sh sk:file_toucher.sh
+sudo docker cp counter.sh sk:counter.sh
+sudo docker cp dracula.txt sk:dracula.txt
+sudo docker exec sk sh counter.sh dracula.txt
+
+#Truncated output is the following
+#   7358 the
+#   5650 and
+#   4745 I
+#   4443 to
+#   3679 of
+#   2916 a
+#   2436 in
+#   2376 that
+#   1923 he
+#   1865 was
+
+sudo docker exec sk sh file_toucher.sh dracula.txt output_dir
+
+#to check that it executed correctly we can do the followig
+#sudo docker exec -it sk sh
+#cd output_dir
+# ls
+# we will see the following output, that means everything was done correct
+#I.txt  and.txt	in.txt	that.txt  to.txt
+#a.txt  he.txt	of.txt	the.txt   was.txt
+
